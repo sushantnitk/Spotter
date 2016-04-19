@@ -1,4 +1,4 @@
-package com.findmybus.spotter;
+package com.findmybus.spotter.Spotter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,19 +8,20 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.util.List;
+import com.findmybus.spotter.R;
 
+import java.util.List;
 /**
  * Created by sushantkumar on 14/4/16.
  */
 public class BusAdapter extends BaseAdapter {
 
     static Context context;
-    List<String> busInfo;
+    List<SpotterBean> busInfo;
     TextView busnumber;
     ImageView busImage;
 
-    public BusAdapter(Context context,List<String> busInfo){
+    public BusAdapter(Context context,List<SpotterBean> busInfo){
         this.context=context;
         this.busInfo=busInfo;
     }

@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">Spotter</string>
     <string name="action_settings">Settings</string>
+    <string name="bus_db">BusDB</string>
+    <string name="bus_Image">BusImage</string>
+    <string name="initializing">Initializing</string>
+    <string name="loading_buses">Loading Buses</string>
+    <string name="loading_stops">Loading Bus Stops</string>
+    <string name="getting_location">Getting your location</string>
+    <string name="finding_nearest_stops">Finding nearest bus stops</string>
+    <string name="gps_network_not_enabled">We are unable to get your current location since your GPS is not enabled. You can either enable your GPS or fill your location manually.</string>
+    <string name="open_location_settings">Enable GPS?</string>
+    <string name="location_settings_cancel">Fill Manually</string>
+    <string name="data_network_not_enabled">You are not connected to the internet. Do you want to enable now?</string>
+    <string name="open_data_settings">Go to network settings</string>
+    <string name="enable_data_network_cancel">Exit application</string>
+    <string name="try_again">"Try Again"</string>
+    <string name="poor_net">No or poor internet connection.</string>
+    <string name="exiting_app">Exiting..</string>
 </resources>
