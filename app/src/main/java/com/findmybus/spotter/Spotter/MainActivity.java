@@ -37,21 +37,23 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
 
     List<SpotterBean> busInfo;
     GridView busInfoView;
-    WifiManager wifiManager;
-    LocationManager locationManager;
     ProgressDialog dialog;
     ErrorFragment errorFragment;
     BusAdapter adapter;
     Context context;
+    JSONObject array;
+    Location l;
+    String route;
+    String UpStops;
+    String DownStops;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wifiManager = (WifiManager)getSystemService(Context.WIFI_SERVICE);
-        locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
-        Utils.createUniqId(getApplicationContext());
+        //Utils.createUniqId(getApplicationContext());
         setContentView(R.layout.activity_main);
         busInfoView=(GridView)findViewById(R.id.gridview);
         busInfoView.setAdapter(new BusAdapter(this,busInfo));
+        new FetchFromServerTask(this, 0).execute("http://" + Constants.SERVER_URL + "/" + "spotterroutes?" + l.getLatitude() + l.getLongitude() + "&spotterid=" + Constants.SPOTTERID);
 
     }
     @Override
@@ -81,30 +83,14 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
                 transaction.replace(R.id.container, errorFragment).commit();
             }
             else{
-                JSONObject array;
+
                 try{
                     array = new JSONObject(string);
                     busInfo=new ArrayList<>();
-                    String route= array.getString("Route");
+                    route= array.getString("Route");
                     JSONObject stops= new JSONObject("Stops");
-                    String UpStops = stops.getString("UpStop");
-                    String DownStops = stops.getString("DownStop");
-                    SpotterBean bean = new SpotterBean();
-                    bean.setRoute(route);
-                    bean.setUpStop(UpStops);
-                    bean.setDownStop(DownStops);
-                    busInfo.add(bean);
-                    adapter=new BusAdapter(this,busInfo);
-                    busInfoView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                        @Override
-                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                            Intent intent = new Intent(context,SpotterMain.class);
-                            intent.putExtra("BuseInfo",busInfo.get(position).getRoute());
-                            intent.putExtra("Upstop",busInfo.get(position).getUpStop());
-                            intent.putExtra("DownStop",busInfo.get(position).getDownStop());
-                        }
-                    });
-                    busInfoView.setAdapter(adapter);
+                    UpStops = stops.getString("UpStop");
+                    DownStops = stops.getString("DownStop");
                 }catch (JSONException e) {
                     Log.e("MainActivity", e.toString());
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -130,6 +116,22 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
 
     @Override
     public void onFindLocationCompletion(Location l) {
-        new FetchFromServerTask(this, 0).execute("http://" + Constants.SERVER_URL + "/" + "spotterroutes?"+l.getLatitude()+l.getLongitude()+"&spotterid="+Constants.SPOTTERID);
+        SpotterBean bean = new SpotterBean();
+        bean.setRoute(route);
+        bean.setUpStop(UpStops);
+        bean.setDownStop(DownStops);
+        busInfo.add(bean);
+        adapter=new BusAdapter(this,busInfo);
+        busInfoView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(context, SpotterMain.class);
+                intent.putExtra("BuseInfo", busInfo.get(position).getRoute());
+                intent.putExtra("Upstop", busInfo.get(position).getUpStop());
+                intent.putExtra("DownStop", busInfo.get(position).getDownStop());
+            }
+        });
+        busInfoView.setAdapter(adapter);
+
     }
 }

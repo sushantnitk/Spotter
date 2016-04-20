@@ -3,6 +3,7 @@
     <string name="action_settings">Settings</string>
     <string name="bus_db">BusDB</string>
     <string name="bus_Image">BusImage</string>
+    <string name="share">PingLocation</string>
     <string name="initializing">Initializing</string>
     <string name="loading_buses">Loading Buses</string>
     <string name="loading_stops">Loading Bus Stops</string>

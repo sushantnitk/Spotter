@@ -109,7 +109,7 @@
                  android:layout_width="wrap_content"
                  android:layout_height="50dp"
                  android:id="@+id/Share"
-                 android:text="@string/Share"
+                 android:text="@string/share"
                  android:layout_gravity="right"/>
          </LinearLayout>
      </LinearLayout>

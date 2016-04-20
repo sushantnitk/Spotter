@@ -47,7 +47,7 @@ public class BusAdapter extends BaseAdapter {
             convertView= LayoutInflater.from(context).inflate(R.layout.buses_list,parent,false);
 
         busnumber=(TextView)convertView.findViewById(R.id.busnumber);
-        busImage=(ImageView)convertView.findViewById(R.id.busimage);
+        busImage=(ImageView)convertView.findViewById(R.id.busImage);
         return convertView;
     }
 }

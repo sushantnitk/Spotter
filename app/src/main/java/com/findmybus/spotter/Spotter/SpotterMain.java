@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -56,11 +57,12 @@ public class SpotterMain extends Activity implements FetchFromServerUser {
                 switch (selectedId){
                     case(R.id.Up) :
                         String directionUp= "Up";
-                        new FetchFromServerTask(SpotterMain.this,0).execute("http://" + Constants.SERVER_URL + "/" + bus +"/"+ location.getLongitude() + location.getLatitude());
+                        new FetchFromServerTask(SpotterMain.this,0).execute("http://" + Constants.SERVER_URL + "/" + "routes" +"/"+"spotping"+"/"+":id?"+ Constants.ID + directionUp + location.getLongitude() + location.getLatitude()+Constants.SPOTTERID + System.currentTimeMillis());
 
 
                     case(R.id.down) :
                         String directionDown="Down";
+                        new FetchFromServerTask(SpotterMain.this,0).execute("http://" + Constants.SERVER_URL + "/" + "routes" +"/"+"spotping"+"/"+":id?"+ Constants.ID + directionDown + location.getLongitude() + location.getLatitude()+Constants.SPOTTERID + System.currentTimeMillis());
 
 
                 }
