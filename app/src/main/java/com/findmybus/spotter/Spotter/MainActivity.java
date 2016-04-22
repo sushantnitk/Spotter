@@ -4,15 +4,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
-import android.location.LocationManager;
-import android.net.wifi.WifiManager;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
@@ -26,6 +23,7 @@ import java.util.List;
 import com.findmybus.spotter.Utilities.Constants;
 import com.findmybus.spotter.Utilities.FetchFromServerTask;
 import com.findmybus.spotter.Utilities.FetchFromServerUser;
+import com.findmybus.spotter.Utilities.FindCurrentLocationTask;
 import com.findmybus.spotter.Utilities.FindCurrentLocationUser;
 import com.findmybus.spotter.Utilities.Utils;
 
@@ -40,21 +38,21 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
     ProgressDialog dialog;
     ErrorFragment errorFragment;
     BusAdapter adapter;
-    Context context;
-    JSONObject array;
-    Location l;
     String route;
     String UpStops;
     String DownStops;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //Utils.createUniqId(getApplicationContext());
         setContentView(R.layout.activity_main);
         busInfoView=(GridView)findViewById(R.id.gridview);
-        busInfoView.setAdapter(new BusAdapter(this,busInfo));
-        new FetchFromServerTask(this, 0).execute("http://" + Constants.SERVER_URL + "/" + "spotterroutes?" + l.getLatitude() + l.getLongitude() + "&spotterid=" + Constants.SPOTTERID);
 
+        new FindCurrentLocationTask(this, this).execute();
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
     @Override
     public void onFetchCompletion(String string, int id) {
@@ -85,12 +83,35 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
             else{
 
                 try{
-                    array = new JSONObject(string);
                     busInfo=new ArrayList<>();
-                    route= array.getString("Route");
-                    JSONObject stops= new JSONObject("Stops");
-                    UpStops = stops.getString("UpStop");
-                    DownStops = stops.getString("DownStop");
+                    Log.i("String Fetchd",string);
+                    JSONArray jsonArray = new JSONArray(string);
+                    for(int i = 0; i < jsonArray.length(); i++){
+                        JSONObject obj = jsonArray.getJSONObject(i);
+                        JSONObject stops= obj.getJSONObject("Stops");
+                        route= obj.getString("Route");
+                        UpStops = stops.getString("UpStop");
+                        DownStops = stops.getString("DownStop");
+                        SpotterBean bean = new SpotterBean();
+                        bean.setRoute(route);
+                        bean.setUpStop(UpStops);
+                        bean.setDownStop(DownStops);
+                        busInfo.add(bean);
+                    }
+                    adapter=new BusAdapter(this,busInfo);
+                    busInfoView.setAdapter(adapter);
+                    busInfoView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                            Intent intent = new Intent(MainActivity.this, SpotterMain.class);
+                            intent.putExtra("BusInfo", busInfo.get(position).getRoute());
+                            intent.putExtra("Upstop", busInfo.get(position).getUpStop());
+                            intent.putExtra("Downstop", busInfo.get(position).getDownStop());
+
+                              startActivity(intent);
+                        }
+                    });
+
                 }catch (JSONException e) {
                     Log.e("MainActivity", e.toString());
                     FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -116,22 +137,11 @@ public class MainActivity extends AppCompatActivity implements FetchFromServerUs
 
     @Override
     public void onFindLocationCompletion(Location l) {
-        SpotterBean bean = new SpotterBean();
-        bean.setRoute(route);
-        bean.setUpStop(UpStops);
-        bean.setDownStop(DownStops);
-        busInfo.add(bean);
-        adapter=new BusAdapter(this,busInfo);
-        busInfoView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(context, SpotterMain.class);
-                intent.putExtra("BuseInfo", busInfo.get(position).getRoute());
-                intent.putExtra("Upstop", busInfo.get(position).getUpStop());
-                intent.putExtra("DownStop", busInfo.get(position).getDownStop());
-            }
-        });
-        busInfoView.setAdapter(adapter);
+        Log.d ("MainActivity", "http://"+Constants.SERVER_URL+"/" + "spotterroutes?"+"latitude="+l.getLatitude()+"&longitude="+l.getLongitude() + "&spotterid="+Constants.SPOTTERID);
+        new FetchFromServerTask(this, 0).execute("http://"+Constants.SERVER_URL+"/" + "spotterroutes?"+"latitude="+l.getLatitude()+"&longitude="+l.getLongitude() + "&spotterid="+Constants.SPOTTERID);
+    }
 
+    public void retry(View view){
+        new FindCurrentLocationTask(this, this).execute();
     }
 }

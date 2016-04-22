@@ -16,10 +16,10 @@ import java.util.List;
  */
 public class BusAdapter extends BaseAdapter {
 
-    static Context context;
+    Context context;
     List<SpotterBean> busInfo;
     TextView busnumber;
-    ImageView busImage;
+    ImageView busimage;
 
     public BusAdapter(Context context,List<SpotterBean> busInfo){
         this.context=context;
@@ -28,12 +28,12 @@ public class BusAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return busInfo.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return busInfo.get(position);
     }
 
     @Override
@@ -47,7 +47,8 @@ public class BusAdapter extends BaseAdapter {
             convertView= LayoutInflater.from(context).inflate(R.layout.buses_list,parent,false);
 
         busnumber=(TextView)convertView.findViewById(R.id.busnumber);
-        busImage=(ImageView)convertView.findViewById(R.id.busImage);
+        busimage = (ImageView)convertView.findViewById(R.id.busimage);
+        busnumber.setText(busInfo.get(position).getRoute());
         return convertView;
     }
 }
